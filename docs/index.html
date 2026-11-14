@@ -1,11 +1,538 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Análise exploratória da evolução e distribuição estadual do desmatamento na Amazônia Legal entre 1988 e 2022."
+    />
+    <title>Desmatamento na Amazônia Legal: análise temporal e estadual</title>
+    <style>
+      :root {
+        --navy: #24533b;
+        --blue: #397653;
+        --pale-blue: #eff7f0;
+        --line: #d8e6da;
+        --ink: #29372f;
+        --muted: #68796d;
+        --paper: #ffffff;
+        --page: #edf2ed;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 28px 14px;
+        background: var(--page);
+        color: var(--ink);
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 15px;
+        line-height: 1.72;
+      }
+      .article {
+        max-width: 850px;
+        margin: 0 auto;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        box-shadow: 0 5px 22px #244a3010;
+        border-top: 5px solid #4e805d;
+        padding: clamp(24px, 5vw, 58px);
+      }
+      header {
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 22px;
+        margin-bottom: 26px;
+      }
+      h1,
+      h2,
+      h3,
+      nav,
+      .meta,
+      .keywords,
+      .badge,
+      .caption,
+      .callout,
+      table,
+      footer {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      h1 {
+        color: var(--navy);
+        font-size: clamp(25px, 4vw, 34px);
+        line-height: 1.25;
+        margin: 0 0 15px;
+      }
+      .subtitle {
+        color: var(--muted);
+        font-size: 16px;
+        margin: 0 0 17px;
+      }
+      .meta {
+        color: #52637b;
+        font-size: 12px;
+        line-height: 1.7;
+      }
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 14px;
+      }
+      .badge {
+        border: 1px solid var(--line);
+        background: #f7faff;
+        color: var(--navy);
+        padding: 4px 9px;
+        border-radius: 3px;
+        font-size: 11px;
+      }
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .abstract {
+        background: #f7f9fc;
+        border-left: 4px solid #5b956d;
+        padding: 17px 20px;
+        margin: 24px 0;
+      }
+      .abstract h2 {
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin: 0 0 9px;
+        color: var(--navy);
+      }
+      .abstract p {
+        margin: 0;
+      }
+      .keywords {
+        font-size: 12px;
+        margin-top: 12px;
+        color: #52637b;
+      }
+      nav {
+        border: 1px solid var(--line);
+        padding: 16px 20px;
+        margin: 24px 0 30px;
+        background: #fbfdfb;
+      }
+      nav strong {
+        display: block;
+        font-size: 13px;
+        color: var(--navy);
+        margin-bottom: 7px;
+      }
+      nav ol {
+        margin: 0;
+        padding-left: 20px;
+        font-size: 12px;
+        line-height: 1.9;
+      }
+      section {
+        margin: 28px 0;
+      }
+      h2.section-title {
+        font-size: 20px;
+        color: var(--navy);
+        border-bottom: 1px solid var(--line);
+        border-left: 3px solid #6c9b78;
+        padding: 0 0 8px 11px;
+        margin: 0 0 14px;
+      }
+      h3 {
+        font-size: 15px;
+        color: var(--navy);
+        margin: 20px 0 8px;
+      }
+      p {
+        margin: 0 0 13px;
+        text-align: justify;
+      }
+      .rq {
+        background: #f2f8f2;
+        border: 1px solid #d9eadb;
+        padding: 11px 15px;
+        margin: 10px 0;
+        font-size: 14px;
+      }
+      pre {
+        overflow-x: auto;
+        background: #f4f7f4;
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        padding: 14px 16px;
+        font-size: 12px;
+        line-height: 1.55;
+        color: #233650;
+      }
+      code {
+        font-family: Consolas, "Courier New", monospace;
+      }
+      figure {
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        padding: 14px;
+        margin: 18px 0;
+        background: #fff;
+      }
+      figure img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .chart-placeholder {
+        min-height: 180px;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        padding: 25px;
+        background: #f8fbff;
+        border: 1px dashed #b8cbe5;
+        color: #64758d;
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+      }
+      .caption {
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.5;
+        margin-top: 10px;
+        text-align: center;
+      }
+      .callout {
+        background: #f1f8f1;
+        border: 1px solid #c9dfcc;
+        padding: 16px 18px;
+        font-size: 13px;
+      }
+      .callout ul {
+        margin: 8px 0 0;
+        padding-left: 20px;
+      }
+      .references {
+        font-size: 12px;
+      }
+      .references li {
+        margin-bottom: 8px;
+      }
+      footer {
+        border-top: 1px solid var(--line);
+        margin-top: 32px;
+        padding-top: 15px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+      @media (max-width: 600px) {
+        body {
+          padding: 0;
+          font-size: 14px;
+        }
+        .article {
+          border: 0;
+          padding: 22px 18px;
+        }
+        nav {
+          padding: 13px 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="article">
+      <header>
+        <h1>
+          Desmatamento na Amazônia Legal: uma análise temporal e da distribuição
+          entre os estados (1988–2022)
+        </h1>
+        <p class="subtitle">
+          Análise exploratória de dados públicos por meio de Python
+        </p>
+        <div class="meta">
+          <strong>Autor:</strong> Davi Scarpelli<br />
+          <strong>Professor:</strong> Alexandre Neves Louzada<br />
+          <strong>Instituição:</strong> Unilasalle-RJ - Sistemas de
+          Informação<br />
+          <strong>Disciplina:</strong> Linguagens de Programação<br />
+          <strong>Período analisado:</strong> 1988–2022
+        </div>
+        <div class="badges">
+          <span class="badge">Artigo acadêmico</span>
+          <span class="badge">Análise de dados</span>
+          <span class="badge">Python · Pandas · Plotly</span>
+          <a
+            class="badge"
+            href="https://github.com/ScarpelliDavi/desmatamento_brasil"
+            target="_blank"
+            rel="noopener"
+            >Repositório no GitHub ↗</a
+          >
+        </div>
+      </header>
+
+      <div class="abstract">
+        <h2>Resumo</h2>
+        <p>
+          Este trabalho apresenta uma análise exploratória da evolução do
+          desmatamento na Amazônia Legal entre 1988 e 2022, utilizando uma base
+          de dados anual com valores de área desmatada por estado e total
+          regional. O estudo foi conduzido com Python e Pandas, incluindo etapas
+          de extração, tratamento e validação dos dados, seguidas da construção
+          de visualizações interativas com Plotly. A análise busca observar o
+          comportamento do desmatamento ao longo do período e identificar os
+          estados com maior contribuição para a área acumulada. A inspeção dos
+          gráficos sugere uma redução dos níveis anuais a partir do final da
+          década de 2000, quando comparados a períodos anteriores, e evidencia
+          que Pará e Mato Grosso concentram os maiores valores acumulados entre
+          os estados considerados. Os resultados são descritivos e permitem
+          caracterizar padrões temporais e territoriais presentes na série, sem
+          estabelecer relações causais para as variações observadas.
+        </p>
+        <div class="keywords">
+          <strong>Palavras-chave:</strong> Amazônia Legal; desmatamento; análise
+          exploratória; séries temporais; Python.
+        </div>
+      </div>
+
+      <nav aria-label="Sumário">
+        <strong>Sumário</strong>
+        <ol>
+          <li><a href="#introducao">Introdução</a></li>
+          <li><a href="#metodologia">Metodologia e Pipeline de Dados</a></li>
+          <li><a href="#resultados">Resultados e Discussão</a></li>
+          <li><a href="#conclusao">Conclusão</a></li>
+          <li>
+            <a href="#fair">Disponibilidade dos Dados e Princípios FAIR</a>
+          </li>
+          <li><a href="#referencias">Referências</a></li>
+        </ol>
+      </nav>
+
+      <section id="introducao">
+        <h2 class="section-title">1. Introdução</h2>
+        <p>
+          A análise do desmatamento na Amazônia Legal é relevante para
+          compreender mudanças na cobertura florestal e a distribuição
+          territorial da pressão sobre a floresta. A observação de uma série
+          histórica permite descrever tendências e comparar a participação dos
+          estados ao longo do período considerado.
+        </p>
+        <p>
+          Este estudo utiliza dados anuais de área desmatada por estado,
+          cobrindo 1988 a 2022. A investigação é orientada pelas seguintes
+          perguntas de pesquisa:
+        </p>
+        <div class="rq">
+          <strong>RQ1.</strong> Como o desmatamento na Amazônia Legal evoluiu ao
+          longo do período analisado?
+        </div>
+        <div class="rq">
+          <strong>RQ2.</strong> Quais estados da Amazônia Legal apresentam os
+          maiores índices de desmatamento acumulado no período analisado?
+        </div>
+        <p>
+          O objetivo é responder a essas questões por meio de tratamento
+          sistemático dos dados, estatísticas descritivas e visualizações que
+          facilitem a interpretação dos padrões observados.
+        </p>
+      </section>
+
+      <section id="metodologia">
+        <h2 class="section-title">2. Metodologia e Pipeline de Dados</h2>
+        <p>
+          A base apresenta observações anuais, com uma coluna para cada um dos
+          nove estados incluídos no conjunto e uma variável de área total
+          desmatada. Os valores de área são expressos em quilômetros quadrados
+          (km²). A análise foi desenvolvida em Python, utilizando Pandas para
+          manipulação dos dados e Plotly para visualização.
+        </p>
+        <h3>2.1. Extração, transformação e carga (ETL)</h3>
+        <p>
+          O processo de ETL foi implementado no módulo <code>src/etl.py</code>.
+          A extração realiza a leitura do CSV bruto. Na transformação, os nomes
+          das colunas são padronizados, e são verificadas a presença de valores
+          ausentes, duplicatas e valores negativos. Também é validada a
+          correspondência entre a soma das áreas estaduais e o total anual. Ao
+          final, a base tratada é salva em formato CSV na pasta
+          <code>data/processed</code>.
+        </p>
+        <pre><code>df = pd.read_csv(RAW_FILE)
+
+df = df.rename(columns={
+    "referencia": "ano",
+    "area_total_desmatamento": "area_total_desmatada"
+})
+
+# Validação da soma das áreas estaduais
+soma_estados = df[ESTADOS].sum(axis=1)</code></pre>
+        <p>
+          Após o tratamento, foram realizadas inspeções de estrutura e
+          estatísticas descritivas no notebook de análise exploratória. Os
+          gráficos produzidos incluem a série temporal do total regional, o
+          ranking de área acumulada por estado e as séries temporais estaduais.
+        </p>
+      </section>
+
+      <section id="resultados">
+        <h2 class="section-title">3. Resultados e Discussão</h2>
+        <p>
+          A visualização da série temporal do desmatamento total sugere uma
+          redução expressiva nos valores anuais a partir do final da década de
+          2000, em comparação com níveis observados nas décadas de 1980 e 1990.
+          A série também apresenta oscilações entre anos, indicando que a
+          trajetória não é uniformemente decrescente.
+        </p>
+        <figure>
+          <iframe
+            src="assets/evolucao_desmatamento_anual.html"
+            width="100%"
+            height="500"
+            style="border: none"
+            title="Evolução anual do desmatamento na Amazônia Legal"
+          ></iframe>
+          <figcaption class="caption">
+            Figura 1 — Evolução anual da área total desmatada na Amazônia Legal
+            (1988–2022). Fonte: base de dados utilizada no estudo.
+          </figcaption>
+        </figure>
+        <p>
+          Na comparação do desmatamento acumulado por estado, Pará e Mato Grosso
+          se destacam, apresentando valores substancialmente superiores aos
+          demais estados. Esse resultado aponta para uma concentração
+          territorial dos valores acumulados durante a série histórica.
+        </p>
+        <figure>
+          <iframe
+            src="assets/desmatamento_por_estado.html"
+            width="100%"
+            height="500"
+            style="border: none"
+            title="Desmatamento acumulado por estado"
+          ></iframe>
+          <figcaption class="caption">
+            Figura 2 — Área desmatada acumulada por estado no período analisado.
+            Fonte: base de dados utilizada no estudo.
+          </figcaption>
+        </figure>
+        <p>
+          As séries estaduais permitem observar que a trajetória temporal varia
+          entre os estados. Essa visualização complementa a análise agregada,
+          pois evidencia diferenças de escala e de comportamento ao longo dos
+          anos.
+        </p>
+        <figure>
+          <iframe
+            src="assets/evolucao_por_estado.html"
+            width="100%"
+            height="500"
+            style="border: none"
+            title="Evolução anual por estado"
+          ></iframe>
+          <figcaption class="caption">
+            Figura 3 — Evolução anual da área desmatada por estado. Fonte: base
+            de dados utilizada no estudo.
+          </figcaption>
+        </figure>
+        <p>
+          As interpretações apresentadas são descritivas. Os gráficos permitem
+          identificar padrões na série, mas não são suficientes, isoladamente,
+          para explicar as causas das variações temporais ou das diferenças
+          entre estados.
+        </p>
+      </section>
+
+      <section id="conclusao">
+        <h2 class="section-title">4. Conclusão</h2>
+        <p>
+          A análise exploratória permitiu observar dois padrões principais na
+          base estudada: uma redução dos valores anuais de desmatamento a partir
+          do final da década de 2000, em comparação com períodos anteriores, e
+          uma concentração dos valores acumulados nos estados do Pará e de Mato
+          Grosso.
+        </p>
+        <p>
+          Assim, as visualizações desenvolvidas contribuem para responder às
+          perguntas de pesquisa propostas, oferecendo uma síntese da evolução
+          temporal e da distribuição estadual do desmatamento na Amazônia Legal
+          entre 1988 e 2022. Como possibilidade de continuidade, análises
+          adicionais poderiam investigar fatores associados às oscilações
+          observadas, utilizando fontes complementares.
+        </p>
+      </section>
+
+      <section id="fair">
+        <h2 class="section-title">
+          5. Disponibilidade dos Dados e Princípios FAIR
+        </h2>
+        <div class="callout">
+          <strong>Disponibilidade e reprodutibilidade</strong>
+          <ul>
+            <li>
+              <strong>Findable (Localizável):</strong> código, notebook,
+              documentação e dados do projeto estão organizados no repositório
+              público.
+            </li>
+            <li>
+              <strong>Accessible (Acessível):</strong> o repositório pode ser
+              acessado publicamente pelo GitHub.
+            </li>
+            <li>
+              <strong>Interoperable (Interoperável):</strong> os dados tratados
+              são disponibilizados em CSV e as variáveis estão documentadas em
+              <code>data/data_dictionary.md</code>.
+            </li>
+            <li>
+              <strong>Reusable (Reutilizável):</strong> o processo de ETL está
+              documentado e as dependências são listadas em
+              <code>requirements.txt</code>.
+            </li>
+          </ul>
+        </div>
+        <p>
+          Repositório do projeto:
+          <a
+            href="https://github.com/ScarpelliDavi/desmatamento_brasil"
+            target="_blank"
+            rel="noopener"
+            >github.com/ScarpelliDavi/desmatamento_brasil</a
+          >.
+        </p>
+      </section>
+
+      <section id="referencias">
+        <h2 class="section-title">6. Referências</h2>
+        <ol class="references">
+          <li>
+            Base de dados de desmatamento na Amazônia Legal utilizada na
+            atividade acadêmica. Detalhes de origem e acesso devem ser
+            complementados com a referência oficial fornecida junto ao dataset.
+          </li>
+          <li>
+            PANDAS. <em>pandas: Python Data Analysis Library</em>. Disponível
+            em:
+            <a href="https://pandas.pydata.org/" target="_blank" rel="noopener"
+              >https://pandas.pydata.org/</a
+            >.
+          </li>
+          <li>
+            PLOTLY. <em>Plotly Python Graphing Library</em>. Disponível em:
+            <a href="https://plotly.com/python/" target="_blank" rel="noopener"
+              >https://plotly.com/python/</a
+            >.
+          </li>
+        </ol>
+      </section>
+
+      <footer>
+        Artigo acadêmico desenvolvido para fins educacionais. As descrições e
+        conclusões refletem a análise exploratória realizada sobre o conjunto de
+        dados utilizado no projeto.
+      </footer>
+    </main>
+  </body>
 </html>
